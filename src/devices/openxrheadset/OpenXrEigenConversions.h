@@ -14,7 +14,7 @@
 #include <Eigen/Geometry>
 
 
-inline Eigen::Vector3f toEigen(const XrVector3f vector)
+inline Eigen::Vector3f toEigen(const XrVector3f &vector)
 {
     Eigen::Vector3f output;
     output[0] = vector.x;
@@ -23,7 +23,7 @@ inline Eigen::Vector3f toEigen(const XrVector3f vector)
     return output;
 }
 
-inline Eigen::Quaternionf toEigen(const XrQuaternionf quaternion)
+inline Eigen::Quaternionf toEigen(const XrQuaternionf &quaternion)
 {
     Eigen::Quaternionf output;
     output.w() = quaternion.w;
@@ -31,6 +31,12 @@ inline Eigen::Quaternionf toEigen(const XrQuaternionf quaternion)
     output.y() = quaternion.y;
     output.z() = quaternion.z;
     return output;
+}
+
+inline Eigen::Isometry3f toEigen(const XrPosef &pose)
+{
+    return Eigen::Translation3f(toEigen(pose.position)) *
+         Eigen::Quaternionf(toEigen(pose.orientation));
 }
 
 inline XrVector3f toXr(const Eigen::Vector3f &position)
@@ -49,6 +55,16 @@ inline XrQuaternionf toXr(const Eigen::Quaternionf &quaternion)
     output.x = quaternion.x();
     output.y = quaternion.y();
     output.z = quaternion.z();
+    return output;
+}
+
+inline XrPosef toXr(const Eigen::Isometry3f &pose)
+{
+    XrPosef output;
+
+    output.orientation = toXr(Eigen::Quaternionf(pose.rotation()));
+    output.position = toXr(pose.translation());
+
     return output;
 }
 
