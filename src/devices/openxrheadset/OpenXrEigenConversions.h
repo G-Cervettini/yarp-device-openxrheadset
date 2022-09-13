@@ -33,10 +33,13 @@ inline Eigen::Quaternionf toEigen(const XrQuaternionf &quaternion)
     return output;
 }
 
-inline Eigen::Isometry3f toEigen(const XrPosef &pose)
+inline Eigen::Matrix4f toEigen(const XrPosef &pose)
 {
-    return Eigen::Translation3f(toEigen(pose.position)) *
-         Eigen::Quaternionf(toEigen(pose.orientation));
+    Eigen::Matrix4f output;
+    output.setIdentity();
+    output.block<3, 3>(0, 0) = toEigen(pose.orientation).toRotationMatrix();
+    output.block<3, 1>(0, 3) = toEigen(pose.position);
+    return output;
 }
 
 inline XrVector3f toXr(const Eigen::Vector3f &position)
@@ -58,12 +61,12 @@ inline XrQuaternionf toXr(const Eigen::Quaternionf &quaternion)
     return output;
 }
 
-inline XrPosef toXr(const Eigen::Isometry3f &pose)
+inline XrPosef toXr(const Eigen::Matrix4f &pose)
 {
     XrPosef output;
 
-    output.orientation = toXr(Eigen::Quaternionf(pose.rotation()));
-    output.position = toXr(pose.translation());
+    output.orientation = toXr(Eigen::Quaternionf(pose.block<3, 3>(0, 0)));
+    output.position = toXr(Eigen::Vector3f(pose.block<3, 1>(0, 3)));
 
     return output;
 }
