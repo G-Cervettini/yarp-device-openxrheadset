@@ -230,32 +230,6 @@ void Sphere::drawWithLines(const float lineColor[4]) const
 
 
 
-/*@@ FIXME: when the radius  = 0
-///////////////////////////////////////////////////////////////////////////////
-// update vertex positions only
-///////////////////////////////////////////////////////////////////////////////
-void Sphere::updateRadius()
-{
-    float scale = sqrtf(radius * radius / (vertices[0] * vertices[0] + vertices[1] * vertices[1] + vertices[2] * vertices[2]));
-
-    std::size_t i, j;
-    std::size_t count = vertices.size();
-    for(i = 0, j = 0; i < count; i += 3, j += 8)
-    {
-        vertices[i]   *= scale;
-        vertices[i+1] *= scale;
-        vertices[i+2] *= scale;
-
-        // for interleaved array
-        interleavedVertices[j]   *= scale;
-        interleavedVertices[j+1] *= scale;
-        interleavedVertices[j+2] *= scale;
-    }
-}
-*/
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // dealloc vectors
 ///////////////////////////////////////////////////////////////////////////////
@@ -551,12 +525,12 @@ void Sphere::buildInterleavedVertices()
         interleavedVertices.push_back(vertices[i+1]);
         interleavedVertices.push_back(vertices[i+2]);
 
+        interleavedVertices.push_back(texCoords[j]);
+        interleavedVertices.push_back(texCoords[j+1]);
+
         interleavedVertices.push_back(normals[i]);
         interleavedVertices.push_back(normals[i+1]);
         interleavedVertices.push_back(normals[i+2]);
-
-        interleavedVertices.push_back(texCoords[j]);
-        interleavedVertices.push_back(texCoords[j+1]);
     }
 }
 

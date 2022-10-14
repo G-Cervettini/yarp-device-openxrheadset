@@ -6,8 +6,8 @@
  * BSD-2-Clause license. See the accompanying LICENSE file for details.
  */
 
-#ifndef YARP_DEV_OPENGLQUADLAYER_H
-#define YARP_DEV_OPENGLQUADLAYER_H
+#ifndef YARP_DEV_OPENGLSPHERELAYER_H
+#define YARP_DEV_OPENGLSPHERELAYER_H
 
 #include <vector>
 
@@ -22,12 +22,17 @@
 #include <Shader.h>
 #include <Texture.h>
 #include <FrameBuffer.h>
+#include <Sphere.h>
 
+Sphere sphere(radi, pan, tilt, (unsigned int)dpt, flip, smooth);
 
-class OpenGLQuadLayer : public IOpenXrQuadLayer
+class OpenGLSphereLayer : public IOpenXrQuadLayer
 {
+    Sphere sphere(radi, pan, tilt, (unsigned int)dpt, flip, smooth);         // radius, pan angle (deg), tilt angle (deg), degrees per triangle, flip N-S poles to E-W poles, smooth shading (default: true)
     std::vector<float> m_positions;
     std::vector<unsigned int> m_indices;
+
+
     IOpenXrQuadLayer::Visibility m_visibility{ IOpenXrQuadLayer::Visibility::NONE };
     int32_t m_imageMaxWidth = 0;
     int32_t m_imageMaxHeight = 0;
@@ -59,17 +64,17 @@ class OpenGLQuadLayer : public IOpenXrQuadLayer
 
 public:
 
-    OpenGLQuadLayer();
+    OpenGLSphereLayer();
 
-    ~OpenGLQuadLayer();
+    ~OpenGLSphereLayer();
 
-    OpenGLQuadLayer(const OpenGLQuadLayer&) = delete;
+    OpenGLSphereLayer(const OpenGLSphereLayer&) = delete;
 
-    OpenGLQuadLayer(OpenGLQuadLayer&&) = delete;
+    OpenGLSphereLayer(OpenGLSphereLayer&&) = delete;
 
-    OpenGLQuadLayer& operator=(const OpenGLQuadLayer&) = delete;
+    OpenGLSphereLayer& operator=(const OpenGLSphereLayer&) = delete;
 
-    OpenGLQuadLayer& operator=(OpenGLQuadLayer&&) = delete;
+    OpenGLSphereLayer& operator=(OpenGLSphereLayer&&) = delete;
 
     bool initialize(int32_t imageMaxWidth, int32_t imageMaxHeight);
 
@@ -123,4 +128,4 @@ public:
     virtual void setEnabled(bool enabled) override;
 };
 
-#endif // YARP_DEV_OPENGLQUADLAYER_H
+#endif // YARP_DEV_OPENGLSPHERELAYER_H
