@@ -7,14 +7,13 @@
  */
 
 #include <yarp/os/LogStream.h>
-#include <impl/OpenGLQuadLayer.h>
+#include <impl/OpenGLSphereLayer.h>
 #include <OpenXrHeadsetLogComponent.h>
 #include <OpenXrEigenConversions.h>
-#include <QuadLayerShader.h>
-#include <Sphere.h>
+#include <QuadLayerShader.h>            // it can be used for the sphere too.
 #include <string>
 
-bool OpenGLQuadLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight)
+bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight)
 {
     m_imageMaxWidth = imageMaxWidth;
     m_imageMaxHeight = imageMaxHeight;
@@ -41,8 +40,9 @@ bool OpenGLQuadLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight)
     m_vb.setVertices(m_positions);
 
     VertexBufferLayout layout;
-    layout.push<float>(4); // 4 floats for each vertex position
+    layout.push<float>(3); // 3 floats for each vertex position
     layout.push<float>(2); // 2 floats for texture coordinates to be mapped on each vertex
+    layout.push<float>(3); // 3 floats for each vertex normal
     m_va.addBuffer(m_vb, layout);
 
     m_ib.setIndices(m_indices);
@@ -73,7 +73,7 @@ bool OpenGLQuadLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight)
     return true;
 }
 
-void OpenGLQuadLayer::setFOVs(float fovX, float fovY)
+void OpenGLSphereLayer::setFOVs(float fovX, float fovY)
 {
     float tan_fovY_2 = std::tan(fovY/2);
 
@@ -84,13 +84,13 @@ void OpenGLQuadLayer::setFOVs(float fovX, float fovY)
     m_aspectRatio = std::tan(fovX/2) / tan_fovY_2; //See https://en.wikipedia.org/wiki/Field_of_view_in_video_games
 }
 
-void OpenGLQuadLayer::setDepthLimits(float zNear, float zFar)
+void OpenGLSphereLayer::setDepthLimits(float zNear, float zFar)
 {
     m_zNear = zNear;
     m_zFar = zFar;
 }
 
-void OpenGLQuadLayer::render()
+void OpenGLSphereLayer::render()
 {
     Renderer renderer;
 
@@ -111,7 +111,7 @@ void OpenGLQuadLayer::render()
     renderer.draw(m_va, m_ib, m_shader);
 }
 
-void OpenGLQuadLayer::setOffsetPosition(const Eigen::Vector3f& offset) // the offset vector must represent the position of the screen wrt the headset. Both the Screen Frames are right-handed, have the origin at the center of the screen, the x to the right and the y pointing up.
+void OpenGLSphereLayer::setOffsetPosition(const Eigen::Vector3f& offset) // the offset vector must represent the position of the screen wrt the headset. Both the Screen Frames are right-handed, have the origin at the center of the screen, the x to the right and the y pointing up.
 {
     //The sintax for glm::mat4 is [col][row]
     m_offsetTra[3][0] = -offset(0);
@@ -120,33 +120,33 @@ void OpenGLQuadLayer::setOffsetPosition(const Eigen::Vector3f& offset) // the of
     m_offsetIsSet = true;
 }
 
-bool OpenGLQuadLayer::offsetIsSet() const
+bool OpenGLSphereLayer::offsetIsSet() const
 {
     return m_offsetIsSet;
 }
 
-Texture& OpenGLQuadLayer::getUserTexture()
+Texture& OpenGLSphereLayer::getUserTexture()
 {
     return m_userTexture;
 }
 
-const  IOpenXrQuadLayer::Visibility& OpenGLQuadLayer::visibility() const
+const  IOpenXrQuadLayer::Visibility& OpenGLSphereLayer::visibility() const
 {
     return m_visibility;
 }
 
-bool OpenGLQuadLayer::shouldRender() const
+bool OpenGLSphereLayer::shouldRender() const
 {
     return m_isEnabled && m_isReleased;
 }
 
-void OpenGLQuadLayer::setPose(const Eigen::Vector3f &position, const Eigen::Quaternionf &quaternion)
+void OpenGLSphereLayer::setPose(const Eigen::Vector3f &position, const Eigen::Quaternionf &quaternion)
 {
     setPosition(position);
     setQuaternion(quaternion);
 }
 
-void OpenGLQuadLayer::setPosition(const Eigen::Vector3f &position)
+void OpenGLSphereLayer::setPosition(const Eigen::Vector3f &position)
 {
     m_modelTraEig = position;
     //The sintax for glm::mat4 is [col][row]
@@ -155,7 +155,7 @@ void OpenGLQuadLayer::setPosition(const Eigen::Vector3f &position)
     m_modelTra[3][2] = position(2);
 }
 
-void OpenGLQuadLayer::setQuaternion(const Eigen::Quaternionf &quaternion)
+void OpenGLSphereLayer::setQuaternion(const Eigen::Quaternionf &quaternion)
 {
     m_modelRotEig = quaternion;
 
@@ -167,35 +167,35 @@ void OpenGLQuadLayer::setQuaternion(const Eigen::Quaternionf &quaternion)
     m_modelRot = glm::mat4_cast(qInput);
 }
 
-void OpenGLQuadLayer::setDimensions(float widthInMeters, float heightInMeters)
+void OpenGLSphereLayer::setDimensions(float widthInMeters, float heightInMeters)
 {
     m_modelScale.x = widthInMeters;
     m_modelScale.y = heightInMeters;
 }
 
-void OpenGLQuadLayer::setVisibility(const IOpenXrQuadLayer::Visibility &visibility)
+void OpenGLSphereLayer::setVisibility(const IOpenXrQuadLayer::Visibility &visibility)
 {
     m_visibility = visibility;
 }
 
-void OpenGLQuadLayer::useAlphaChannel(bool useAlphaChannel)
+void OpenGLSphereLayer::useAlphaChannel(bool useAlphaChannel)
 {
     m_useAlpha = useAlphaChannel;
 }
 
-bool OpenGLQuadLayer::getImage(uint32_t &glImage)
+bool OpenGLSphereLayer::getImage(uint32_t &glImage)
 {
     glImage = m_userTexture.getTextureID();
 
     return true;
 }
 
-bool OpenGLQuadLayer::submitImage()
+bool OpenGLSphereLayer::submitImage()
 {
     return submitImage(0, 0, imageMaxWidth(), imageMaxHeight());
 }
 
-bool OpenGLQuadLayer::submitImage(int32_t xOffset, int32_t yOffset, int32_t imageWidth, int32_t imageHeight)
+bool OpenGLSphereLayer::submitImage(int32_t xOffset, int32_t yOffset, int32_t imageWidth, int32_t imageHeight)
 {
 
     m_userTexture.bindToFrameBuffer(m_userBuffer);
@@ -206,7 +206,7 @@ bool OpenGLQuadLayer::submitImage(int32_t xOffset, int32_t yOffset, int32_t imag
         0, 0, imageMaxWidth(), imageMaxHeight(),
         GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-//Resetting read and draw framebuffers
+    //Resetting read and draw framebuffers
     m_userBuffer.unbind();
     m_internalBuffer.unbind();
 
@@ -215,45 +215,45 @@ bool OpenGLQuadLayer::submitImage(int32_t xOffset, int32_t yOffset, int32_t imag
     return true;
 }
 
-int32_t OpenGLQuadLayer::imageMaxHeight() const
+int32_t OpenGLSphereLayer::imageMaxHeight() const
 {
     return m_imageMaxHeight;
 }
 
-int32_t OpenGLQuadLayer::imageMaxWidth() const
+int32_t OpenGLSphereLayer::imageMaxWidth() const
 {
     return m_imageMaxWidth;
 }
 
-float OpenGLQuadLayer::layerWidth() const
+float OpenGLSphereLayer::layerWidth() const
 {
     return m_modelScale.x;
 }
 
-float OpenGLQuadLayer::layerHeight() const
+float OpenGLSphereLayer::layerHeight() const
 {
     return m_modelScale.y;
 }
 
-Eigen::Vector3f OpenGLQuadLayer::layerPosition() const
+Eigen::Vector3f OpenGLSphereLayer::layerPosition() const
 {
     return m_modelTraEig;
 }
 
-Eigen::Quaternionf OpenGLQuadLayer::layerQuaternion() const
+Eigen::Quaternionf OpenGLSphereLayer::layerQuaternion() const
 {
     return m_modelRotEig;
 }
 
-void OpenGLQuadLayer::setEnabled(bool enabled)
+void OpenGLSphereLayer::setEnabled(bool enabled)
 {
     m_isEnabled = enabled;
 }
 
-OpenGLQuadLayer::OpenGLQuadLayer()
+OpenGLSphereLayer::OpenGLSphereLayer()
 {
 }
 
-OpenGLQuadLayer::~OpenGLQuadLayer()
+OpenGLSphereLayer::~OpenGLSphereLayer()
 {
 }
