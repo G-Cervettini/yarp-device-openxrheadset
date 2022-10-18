@@ -31,7 +31,7 @@ const int MAX_TILT_ANGLE = 180;
 ///////////////////////////////////////////////////////////////////////////////
 // ctor
 ///////////////////////////////////////////////////////////////////////////////
-Sphere::Sphere(float radius, int pan, int tilt, unsigned int dpt, bool flip, bool smooth) : interleavedStride(32)
+Sphere::Sphere(float radius, int pan, int tilt, unsigned int dpt, bool flip, bool smooth) : m_interleavedStride(32)
 {
     set(radius, pan, tilt, dpt, flip, smooth);
 }
@@ -43,102 +43,102 @@ Sphere::Sphere(float radius, int pan, int tilt, unsigned int dpt, bool flip, boo
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::set(float radius, int pan, int tilt, unsigned int dpt, bool flip, bool smooth)
 {
-    this->radius = radius;
+    this->m_radius = radius;
 
-    this->flip = flip;
+    this->m_flip = flip;
 
-    this->panAngle = pan;
+    this->m_panAngle = pan;
     if(flip)
     {
         if (pan < MIN_TILT_ANGLE)
-            this->panAngle = MIN_TILT_ANGLE;
+            this->m_panAngle = MIN_TILT_ANGLE;
         if (pan > MAX_TILT_ANGLE)
-            this->panAngle = MAX_TILT_ANGLE;
+            this->m_panAngle = MAX_TILT_ANGLE;
     }else
     {
         if (pan < MIN_PAN_ANGLE)
-            this->panAngle = MIN_PAN_ANGLE;
+            this->m_panAngle = MIN_PAN_ANGLE;
         if (pan > MAX_PAN_ANGLE)
-            this->panAngle = MAX_PAN_ANGLE;
+            this->m_panAngle = MAX_PAN_ANGLE;
     }
 
-    this->tiltAngle = tilt;
+    this->m_tiltAngle = tilt;
     if(flip)
     {
         if (tilt < MIN_PAN_ANGLE)
-            this->tiltAngle = MIN_PAN_ANGLE;
+            this->m_tiltAngle = MIN_PAN_ANGLE;
         if (tilt > MAX_PAN_ANGLE)
-            this->tiltAngle = MAX_PAN_ANGLE;
+            this->m_tiltAngle = MAX_PAN_ANGLE;
     }else
     {
         if (tilt < MIN_TILT_ANGLE)
-            this->tiltAngle = MIN_TILT_ANGLE;
+            this->m_tiltAngle = MIN_TILT_ANGLE;
         if (tilt > MAX_TILT_ANGLE)
-            this->tiltAngle = MAX_TILT_ANGLE;
+            this->m_tiltAngle = MAX_TILT_ANGLE;
     }
 
-    this->dpt = dpt;
+    this->m_dpt = dpt;
 
-    this->smooth = smooth;
+    this->m_smooth = smooth;
     
     if(flip)
     {
-        this->sectorCount = (this->tiltAngle) / dpt;
-        this->stackCount = (this->panAngle) / dpt;
+        this->m_sectorCount = (this->m_tiltAngle) / dpt;
+        this->m_stackCount = (this->m_panAngle) / dpt;
     }
     else
     {
-        this->sectorCount = (this->panAngle) / dpt;
-        this->stackCount = (this->tiltAngle) / dpt;
+        this->m_sectorCount = (this->m_panAngle) / dpt;
+        this->m_stackCount = (this->m_tiltAngle) / dpt;
     }
 
     if(smooth)
-        buildVerticesSmooth(this->flip);
+        buildVerticesSmooth(this->m_flip);
     else
-        buildVerticesFlat(this->flip);
+        buildVerticesFlat(this->m_flip);
 }
 
 void Sphere::setRadius(float radius)
 {
-    if(radius != this->radius)
-        set(radius, panAngle, tiltAngle, dpt, flip, smooth);
+    if(radius != this->m_radius)
+        set(radius, m_panAngle, m_tiltAngle, m_dpt, m_flip, m_smooth);
 }
 
 void Sphere::setPanAngle(int pan)
 {
-    if(pan != this->panAngle)
-        set(radius, pan, tiltAngle, dpt, flip, smooth);
+    if(pan != this->m_panAngle)
+        set(m_radius, pan, m_tiltAngle, m_dpt, m_flip, m_smooth);
 }
 
 void Sphere::setTiltAngle(int tilt)
 {
-    if(tilt != this->tiltAngle)
-        set(radius, panAngle, tilt, dpt, flip, smooth);
+    if(tilt != this->m_tiltAngle)
+        set(m_radius, m_panAngle, tilt, m_dpt, m_flip, m_smooth);
 }
 
 void Sphere::setDPT(unsigned int dpt)
 {
-    if (dpt != this->dpt)
-        set(radius, panAngle, tiltAngle, dpt, flip, smooth);
+    if (dpt != this->m_dpt)
+        set(m_radius, m_panAngle, m_tiltAngle, dpt, m_flip, m_smooth);
 }
 
 void Sphere::setFlip(bool flip)
 {
-    if (flip != this->flip)
-        set(radius, panAngle, tiltAngle, dpt, flip, smooth);
+    if (flip != this->m_flip)
+        set(m_radius, m_panAngle, m_tiltAngle, m_dpt, flip, m_smooth);
 }
 
 void Sphere::setSmooth(bool smooth)
 {
-    if(this->smooth == smooth)
+    if(this->m_smooth == smooth)
         return;
 
-    this->smooth = smooth;
+    this->m_smooth = smooth;
 
     if(smooth)
-        buildVerticesSmooth(this->flip);
+        buildVerticesSmooth(this->m_flip);
     else
-        buildVerticesFlat(this->flip);
+        buildVerticesFlat(this->m_flip);
 }
 
 
@@ -149,13 +149,13 @@ void Sphere::setSmooth(bool smooth)
 void Sphere::printSelf() const
 {
     std::cout << "=========== Sphere ===========\n"
-              << "              Radius: " << radius << "\n"
-              << "           Pan Angle: " << panAngle << " deg" << "\n"
-              << "          Tilt Angle: " << tiltAngle << " deg" << "\n"
-              << "Degrees Per Triangle: " << dpt << "\n"
-              << "      Smooth Shading: " << (smooth ? "true" : "false") << "\n"
-              << "        Sector Count: " << sectorCount << "\n"
-              << "         Stack Count: " << stackCount << "\n"
+              << "              Radius: " << m_radius << "\n"
+              << "           Pan Angle: " << m_panAngle << " deg" << "\n"
+              << "          Tilt Angle: " << m_tiltAngle << " deg" << "\n"
+              << "Degrees Per Triangle: " << m_dpt << "\n"
+              << "      Smooth Shading: " << (m_smooth ? "true" : "false") << "\n"
+              << "        Sector Count: " << m_sectorCount << "\n"
+              << "         Stack Count: " << m_stackCount << "\n"
               << "      Triangle Count: " << getTriangleCount() << "\n"
               << "         Index Count: " << getIndexCount() << "\n"
               << "        Vertex Count: " << getVertexCount() << "\n"
@@ -175,11 +175,11 @@ void Sphere::draw() const
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glVertexPointer(3, GL_FLOAT, interleavedStride, &interleavedVertices[0]);
-    glNormalPointer(GL_FLOAT, interleavedStride, &interleavedVertices[3]);
-    glTexCoordPointer(2, GL_FLOAT, interleavedStride, &interleavedVertices[6]);
+    glVertexPointer(3, GL_FLOAT, m_interleavedStride, &m_interleavedVertices[0]);
+    glNormalPointer(GL_FLOAT, m_interleavedStride, &m_interleavedVertices[3]);
+    glTexCoordPointer(2, GL_FLOAT, m_interleavedStride, &m_interleavedVertices[6]);
 
-    glDrawElements(GL_TRIANGLES, (unsigned int)indices.size(), GL_UNSIGNED_INT, indices.data());
+    glDrawElements(GL_TRIANGLES, (unsigned int)m_indices.size(), GL_UNSIGNED_INT, m_indices.data());
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
@@ -202,9 +202,9 @@ void Sphere::drawLines(const float lineColor[4]) const
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, vertices.data());
+    glVertexPointer(3, GL_FLOAT, 0, m_vertices.data());
 
-    glDrawElements(GL_LINES, (unsigned int)lineIndices.size(), GL_UNSIGNED_INT, lineIndices.data());
+    glDrawElements(GL_LINES, (unsigned int)m_lineIndices.size(), GL_UNSIGNED_INT, m_lineIndices.data());
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glEnable(GL_LIGHTING);
@@ -235,11 +235,11 @@ void Sphere::drawWithLines(const float lineColor[4]) const
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::clearArrays()
 {
-    std::vector<float>().swap(vertices);
-    std::vector<float>().swap(normals);
-    std::vector<float>().swap(texCoords);
-    std::vector<unsigned int>().swap(indices);
-    std::vector<unsigned int>().swap(lineIndices);
+    std::vector<float>().swap(m_vertices);
+    std::vector<float>().swap(m_normals);
+    std::vector<float>().swap(m_texCoords);
+    std::vector<unsigned int>().swap(m_indices);
+    std::vector<unsigned int>().swap(m_lineIndices);
 }
 
 
@@ -259,34 +259,34 @@ void Sphere::buildVerticesSmooth(bool flip)
     float TILT = 0.0f;
     if(flip)
     {
-        PAN = (float)tiltAngle * (PI / 180);
-        TILT = (float)panAngle * (PI / 180);
+        PAN = (float)m_tiltAngle * (PI / 180);
+        TILT = (float)m_panAngle * (PI / 180);
     }else
     {
-        PAN = (float)panAngle * (PI / 180);
-        TILT = (float)tiltAngle * (PI / 180);
+        PAN = (float)m_panAngle * (PI / 180);
+        TILT = (float)m_tiltAngle * (PI / 180);
     }
 
     // clear memory of prev arrays
     clearArrays();
 
     float x, y, z, xy;                                   // vertex position
-    float nx, ny, nz, lengthInv = 1.0f / radius;         // normal
+    float nx, ny, nz, lengthInv = 1.0f / m_radius;       // normal
     float s, t;                                          // texCoord
                                                          
-    float sectorStep = PAN / sectorCount;                
-    float stackStep = TILT / stackCount;                 
+    float sectorStep = PAN / m_sectorCount;
+    float stackStep = TILT / m_stackCount;
     float sectorAngle, stackAngle;                       
                                                          
-    for(int i = 0; i <= stackCount; ++i)                 
+    for(int i = 0; i <= m_stackCount; ++i)
     {                                                    
         stackAngle = TILT / 2 - i * stackStep;           // starting from tiltAngle/2 to -tiltAngle/2
-        xy = radius * cosf(stackAngle);                  // r * cos(u)
-        z = radius * sinf(stackAngle);                   // r * sin(u)
+        xy = m_radius * cosf(stackAngle);                // r * cos(u)
+        z = m_radius * sinf(stackAngle);                 // r * sin(u)
 
         // add (sectorCount+1) vertices per stack
         // the first and last vertices may have same position and normal, but different tex coords (if panAngle=360)
-        for(int j = 0; j <= sectorCount; ++j)
+        for(int j = 0; j <= m_sectorCount; ++j)
         {
             sectorAngle = PAN / 2 - j * sectorStep;      // starting from panAngle/2 to -panAngle/2
 
@@ -300,8 +300,8 @@ void Sphere::buildVerticesSmooth(bool flip)
             nz = - z * lengthInv;
 
             // vertex tex coord between [0, 1]
-            s = (float)j / sectorCount;
-            t = (float)i / stackCount;
+            s = (float)j / m_sectorCount;
+            t = (float)i / m_stackCount;
             
             if (flip)
             {
@@ -324,37 +324,37 @@ void Sphere::buildVerticesSmooth(bool flip)
     //  | /  |
     //  k2--k2+1
     unsigned int k1, k2;
-    for(int i = 0; i < stackCount; ++i)
+    for(int i = 0; i < m_stackCount; ++i)
     {
-        k1 = i * (sectorCount + 1);                      // beginning of current stack
-        k2 = k1 + sectorCount + 1;                       // beginning of next stack
+        k1 = i * (m_sectorCount + 1);                    // beginning of current stack
+        k2 = k1 + m_sectorCount + 1;                     // beginning of next stack
 
-        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+        for(int j = 0; j < m_sectorCount; ++j, ++k1, ++k2)
         {
             // 2 triangles per sector
             addIndices(k1, k2, k1+1);                    // k1---k2---k1+1
             addIndices(k1+1, k2, k2+1);                  // k1+1---k2---k2+1
             
             // vertical lines
-            lineIndices.push_back(k1);
-            lineIndices.push_back(k2);
+            m_lineIndices.push_back(k1);
+            m_lineIndices.push_back(k2);
 
-            if (j == (sectorCount - 1))
+            if (j == (m_sectorCount - 1))
             {
                 // adding last vertical line
-                lineIndices.push_back(k1 + 1);
-                lineIndices.push_back(k2 + 1);
+                m_lineIndices.push_back(k1 + 1);
+                m_lineIndices.push_back(k2 + 1);
             }
 
             // horizontal lines
-            lineIndices.push_back(k1);
-            lineIndices.push_back(k1 + 1);
+            m_lineIndices.push_back(k1);
+            m_lineIndices.push_back(k1 + 1);
             
-            if (i == (stackCount - 1))
+            if (i == (m_stackCount - 1))
             {
                 // adding last horizontal line
-                lineIndices.push_back(k2);
-                lineIndices.push_back(k2 +1);
+                m_lineIndices.push_back(k2);
+                m_lineIndices.push_back(k2 +1);
             }
         }
     }
@@ -376,12 +376,12 @@ void Sphere::buildVerticesFlat(bool flip)
     float TILT = 0.0f;
     if(flip)
     {
-        PAN = (float)tiltAngle * (PI / 180);
-        TILT = (float)panAngle * (PI / 180);
+        PAN = (float)m_tiltAngle * (PI / 180);
+        TILT = (float)m_panAngle * (PI / 180);
     }else
     {
-        PAN = (float)panAngle * (PI / 180);
-        TILT = (float)tiltAngle * (PI / 180);
+        PAN = (float)m_panAngle * (PI / 180);
+        TILT = (float)m_tiltAngle * (PI / 180);
     }
 
     // tmp vertex definition (x,y,z,s,t)
@@ -391,38 +391,38 @@ void Sphere::buildVerticesFlat(bool flip)
     };
     std::vector<Vertex> tmpVertices;
 
-    float sectorStep = PAN / sectorCount;
-    float stackStep = TILT / stackCount;
+    float sectorStep = PAN / m_sectorCount;
+    float stackStep = TILT / m_stackCount;
     float sectorAngle, stackAngle;
 
     // compute all vertices first, each vertex contains (x,y,z,s,t) except normal
-    for (int i = 0; i <= stackCount; ++i)
+    for (int i = 0; i <= m_stackCount; ++i)
     {
         stackAngle = TILT / 2 - i * stackStep;           // starting from tiltAngle/2 to -tiltAngle/2
-        float xy = radius * cosf(stackAngle);            // r * cos(u)
-        float z = radius * sinf(stackAngle);             // r * sin(u)
+        float xy = m_radius * cosf(stackAngle);          // r * cos(u)
+        float z = m_radius * sinf(stackAngle);           // r * sin(u)
 
         // add (sectorCount+1) vertices per stack
         // the first and last vertices may have same position and normal, but different tex coords (if panAngle=360)
-        for (int j = 0; j <= sectorCount; ++j)
+        for (int j = 0; j <= m_sectorCount; ++j)
         {
             sectorAngle = PAN / 2 - j * sectorStep;      // starting from 0 to panAngle
 
             Vertex vertex;
             if (flip)
             {
-                vertex.x = -z;                               // x = - r * sin(u)
-                vertex.y = -xy * sinf(sectorAngle);          // y = - r * cos(u) * sin(v)
+                vertex.x = -z;                              // x = - r * sin(u)
+                vertex.y = -xy * sinf(sectorAngle);         // y = - r * cos(u) * sin(v)
                 vertex.z = -xy * cosf(sectorAngle);         // z = - r * cos(u) * cos(v)
-                vertex.s = (float)i / stackCount;            // t
-                vertex.t = (float)j / sectorCount;           // s
+                vertex.s = (float)i / m_stackCount;         // t
+                vertex.t = (float)j / m_sectorCount;        // s
             }else
             {
                 vertex.x = +xy * sinf(sectorAngle);         // x = + r * cos(u) * sin(v)
                 vertex.y = -z;                              // y = - r * sin(u)
                 vertex.z = -xy * cosf(sectorAngle);         // z = - r * cos(u) * cos(v)
-                vertex.s = 1 - ((float)j / sectorCount);           // s
-                vertex.t = (float)i / stackCount;            // t
+                vertex.s = 1 - ((float)j / m_sectorCount);  // s
+                vertex.t = (float)i / m_stackCount;         // t
             }
             tmpVertices.push_back(vertex);
         }
@@ -436,12 +436,12 @@ void Sphere::buildVerticesFlat(bool flip)
                                                          
     int i, j, k, vi1, vi2;                               
     int index = 0;                                       // index for vertex
-    for (i = 0; i < stackCount; ++i)                     
+    for (i = 0; i < m_stackCount; ++i)
     {                                                    
-        vi1 = i * (sectorCount + 1);                     // index of tmpVertices
-        vi2 = (i + 1) * (sectorCount + 1);
+        vi1 = i * (m_sectorCount + 1);                   // index of tmpVertices
+        vi2 = (i + 1) * (m_sectorCount + 1);
 
-        for (j = 0; j < sectorCount; ++j, ++vi1, ++vi2)
+        for (j = 0; j < m_sectorCount; ++j, ++vi1, ++vi2)
         {
             // get 4 vertices per sector
             //  v1--v3
@@ -478,25 +478,25 @@ void Sphere::buildVerticesFlat(bool flip)
             addIndices(index + 2, index + 1, index + 3);
 
             // indices for vertical lines
-            lineIndices.push_back(index);
-            lineIndices.push_back(index + 1);
+            m_lineIndices.push_back(index);
+            m_lineIndices.push_back(index + 1);
 
-            if (j == (sectorCount - 1))
+            if (j == (m_sectorCount - 1))
             {
                 // adding last vertical line
-                lineIndices.push_back(index + 2);
-                lineIndices.push_back(index + 3);
+                m_lineIndices.push_back(index + 2);
+                m_lineIndices.push_back(index + 3);
             }
 
             // indices for horizontal lines
-            lineIndices.push_back(index);
-            lineIndices.push_back(index + 2);
+            m_lineIndices.push_back(index);
+            m_lineIndices.push_back(index + 2);
 
-            if (i == (stackCount - 1))
+            if (i == (m_stackCount - 1))
             {
                 // adding last horizontal line
-                lineIndices.push_back(index + 1);
-                lineIndices.push_back(index + 3);
+                m_lineIndices.push_back(index + 1);
+                m_lineIndices.push_back(index + 3);
             }
 
             index += 4;     // for next
@@ -515,22 +515,22 @@ void Sphere::buildVerticesFlat(bool flip)
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::buildInterleavedVertices()
 {
-    std::vector<float>().swap(interleavedVertices);
+    std::vector<float>().swap(m_interleavedVertices);
 
     std::size_t i, j;
-    std::size_t count = vertices.size();
+    std::size_t count = m_vertices.size();
     for(i = 0, j = 0; i < count; i += 3, j += 2)
     {
-        interleavedVertices.push_back(vertices[i]);
-        interleavedVertices.push_back(vertices[i+1]);
-        interleavedVertices.push_back(vertices[i+2]);
+        m_interleavedVertices.push_back(m_vertices[i]);
+        m_interleavedVertices.push_back(m_vertices[i+1]);
+        m_interleavedVertices.push_back(m_vertices[i+2]);
 
-        interleavedVertices.push_back(texCoords[j]);
-        interleavedVertices.push_back(texCoords[j+1]);
+        m_interleavedVertices.push_back(m_texCoords[j]);
+        m_interleavedVertices.push_back(m_texCoords[j+1]);
 
-        interleavedVertices.push_back(normals[i]);
-        interleavedVertices.push_back(normals[i+1]);
-        interleavedVertices.push_back(normals[i+2]);
+        m_interleavedVertices.push_back(m_normals[i]);
+        m_interleavedVertices.push_back(m_normals[i+1]);
+        m_interleavedVertices.push_back(m_normals[i+2]);
     }
 }
 
@@ -541,9 +541,9 @@ void Sphere::buildInterleavedVertices()
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::addVertex(float x, float y, float z)
 {
-    vertices.push_back(x);
-    vertices.push_back(y);
-    vertices.push_back(z);
+    m_vertices.push_back(x);
+    m_vertices.push_back(y);
+    m_vertices.push_back(z);
 }
 
 
@@ -553,9 +553,9 @@ void Sphere::addVertex(float x, float y, float z)
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::addNormal(float nx, float ny, float nz)
 {
-    normals.push_back(nx);
-    normals.push_back(ny);
-    normals.push_back(nz);
+    m_normals.push_back(nx);
+    m_normals.push_back(ny);
+    m_normals.push_back(nz);
 }
 
 
@@ -565,8 +565,8 @@ void Sphere::addNormal(float nx, float ny, float nz)
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::addTexCoord(float s, float t)
 {
-    texCoords.push_back(s);
-    texCoords.push_back(t);
+    m_texCoords.push_back(s);
+    m_texCoords.push_back(t);
 }
 
 
@@ -576,9 +576,9 @@ void Sphere::addTexCoord(float s, float t)
 ///////////////////////////////////////////////////////////////////////////////
 void Sphere::addIndices(unsigned int i1, unsigned int i2, unsigned int i3)
 {
-    indices.push_back(i1);
-    indices.push_back(i2);
-    indices.push_back(i3);
+    m_indices.push_back(i1);
+    m_indices.push_back(i2);
+    m_indices.push_back(i3);
 }
 
 
