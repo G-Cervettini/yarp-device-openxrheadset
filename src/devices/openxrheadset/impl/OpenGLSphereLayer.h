@@ -24,11 +24,10 @@
 #include <FrameBuffer.h>
 #include <Sphere.h>
 
-Sphere sphere(radi, pan, tilt, (unsigned int)dpt, flip, smooth);
-
 class OpenGLSphereLayer : public IOpenXrQuadLayer
 {
-    Sphere sphere(radi, pan, tilt, (unsigned int)dpt, flip, smooth);         // radius, pan angle (deg), tilt angle (deg), degrees per triangle, flip N-S poles to E-W poles, smooth shading (default: true)
+    Sphere m_sphere;                                                          // radius, pan angle (deg), tilt angle (deg), degrees per triangle, flip N-S poles to E-W poles, smooth shading (default: true)
+
     std::vector<float> m_positions;
     std::vector<unsigned int> m_indices;
 

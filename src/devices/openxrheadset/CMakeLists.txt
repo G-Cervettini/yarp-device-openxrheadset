@@ -29,6 +29,7 @@ set(yarp_openxrheadset_SRCS
   impl/OpenXrQuadLayer.cpp
   impl/OpenXrInterfaceImpl.cpp
   impl/OpenGLQuadLayer.cpp
+  impl/OpenGLSphereLayer.cpp
   LabelPortToQuadLayer.cpp
   SlideManager.cpp
   EulerAngles.cpp
@@ -44,6 +45,7 @@ set(yarp_openxrheadset_HDRS
   OpenXrEigenConversions.h
   impl/OpenXrQuadLayer.h
   impl/OpenGLQuadLayer.h
+  impl/OpenGLSphereLayer.h
   impl/OpenXrInterfaceImpl.h
   SlideManager.h
   EulerAngles.h
@@ -58,6 +60,7 @@ set(rendering_SRCS
   rendering/VertexBuffer.cpp
   rendering/VertexBufferLayout.cpp
   rendering/FrameBuffer.cpp
+  rendering/Sphere.cpp
   )
 
 set(rendering_HDRS
@@ -69,6 +72,7 @@ set(rendering_HDRS
   rendering/VertexBuffer.h
   rendering/VertexBufferLayout.h
   rendering/FrameBuffer.h
+  rendering/Sphere.h
   )
 
 set(yarp_openxrheadset_driver_SRCS
