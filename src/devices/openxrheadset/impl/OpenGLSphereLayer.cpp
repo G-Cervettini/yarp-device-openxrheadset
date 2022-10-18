@@ -18,26 +18,14 @@ bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight
     m_imageMaxWidth = imageMaxWidth;
     m_imageMaxHeight = imageMaxHeight;
 
-    m_positions = {
-        // vertex coords         // texture coords
-        -0.5f, -0.5f, 0.0, 1.0f, 0.0f, 0.0f, // 0 (the first 4 numbers of the row are the vertex coordinates, the second 2 numbers are the texture coordinate for that vertex (the bottom left corner of the rectangle is also the bottom left corner of the picture))
-         0.5f, -0.5f, 0.0, 1.0f, 1.0f, 0.0f, // 1
-         0.5f,  0.5f, 0.0, 1.0f, 1.0f, 1.0f, // 2
-        -0.5f,  0.5f, 0.0, 1.0f, 0.0f, 1.0f  // 3
-    };
-
-    m_indices = { // creating an index buffer to save GPU memory
-        0, 1, 2,
-        2, 3, 0
-    };
-
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // src (output color of the fragment shader) and dest (color already in the buffer) factors respectively (sfactor, dfactor)
+    glEnable(GL_CULL_FACE);
 
-    m_vb.setVertices(m_positions);
+    m_vb.setVertices(m_sphere.getInterleavedVertices());
 
     VertexBufferLayout layout;
     layout.push<float>(3); // 3 floats for each vertex position
@@ -45,7 +33,7 @@ bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight
     layout.push<float>(3); // 3 floats for each vertex normal
     m_va.addBuffer(m_vb, layout);
 
-    m_ib.setIndices(m_indices);
+    m_ib.setIndices(m_sphere.getIndices());
 
     m_shader.initializeFromString(QuadLayerShader::Content());
     m_shader.bind();

@@ -67,8 +67,6 @@ public:
     // debug
     void printSelf() const;
 
-protected:
-
 private:
     // member functions
     void buildVerticesSmooth(bool flip);
@@ -87,7 +85,7 @@ private:
     float radius;
     int panAngle;
     int tiltAngle;
-    unsigned int dpt;                                // Degrees Per Triangle (in both longitude and latitude)
+    unsigned int dpt;                       // Degrees Per Triangle (in both longitude and latitude)
     bool smooth;
     bool flip { false };
 
