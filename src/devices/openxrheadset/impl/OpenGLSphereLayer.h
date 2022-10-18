@@ -45,6 +45,7 @@ class OpenGLSphereLayer : public IOpenXrQuadLayer
     bool m_useAlpha{true};
     bool m_isEnabled{true};
     bool m_isReleased{false};
+    bool m_isGridVisible{false};
 
     glm::mat4 m_offsetTra = glm::mat4(1.0f);                                  // position of the Headset Frame WRT the Left or Right Screen Frame
     bool m_offsetIsSet{false};
@@ -77,6 +78,14 @@ public:
 
     bool initialize(int32_t imageMaxWidth, int32_t imageMaxHeight);
 
+    void setAngles(int pan, int tilt);
+
+    void setGridRes(unsigned int degreesPerTriangle);
+
+    void setGridPolesDir(bool horizontal);
+
+    void setGridVisibility(bool visible);
+
     void setFOVs(float fovX, float fovY);
 
     void setDepthLimits(float zNear, float zFar);
@@ -100,7 +109,7 @@ public:
 
     virtual void setQuaternion(const Eigen::Quaternionf &quaternion) override;
 
-    virtual void setDimensions(float widthInMeters, float heightInMeters) override;
+    virtual void setDimensions(float widthInMeters, float heightInMeters, float depthInMeters) override;
 
     virtual void setVisibility(const Visibility& visibility) override;
 
