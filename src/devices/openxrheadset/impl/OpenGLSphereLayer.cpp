@@ -61,6 +61,27 @@ bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight
     return true;
 }
 
+void OpenGLSphereLayer::setAngles(int pan, int tilt)
+{
+    m_sphere.setPanAngle(pan);
+    m_sphere.setTiltAngle(tilt);
+}
+
+void OpenGLSphereLayer::setGridRes(unsigned int degreesPerTriangle)            // Set grid resolution expressed in degrees. Input can range between 1 and min(pan, tilt). The smaller the input, the higher the resolution.
+{
+    m_sphere.setDPT(degreesPerTriangle);
+}
+
+void OpenGLSphereLayer::setGridPolesDir(bool horizontal)                       // Set direction of the grid poles: horizontal/vertical.
+{
+    m_sphere.setFlip(horizontal);
+}
+
+void OpenGLSphereLayer::setGridVisibility(bool visible)
+{
+    m_isGridVisible = visible; // the flag must be used inside the rendering
+}
+
 void OpenGLSphereLayer::setFOVs(float fovX, float fovY)
 {
     float tan_fovY_2 = std::tan(fovY/2);
@@ -155,10 +176,11 @@ void OpenGLSphereLayer::setQuaternion(const Eigen::Quaternionf &quaternion)
     m_modelRot = glm::mat4_cast(qInput);
 }
 
-void OpenGLSphereLayer::setDimensions(float widthInMeters, float heightInMeters)
+void OpenGLSphereLayer::setDimensions(float widthInMeters, float heightInMeters, float depthInMeters)
 {
     m_modelScale.x = widthInMeters;
     m_modelScale.y = heightInMeters;
+    m_modelScale.z = depthInMeters;
 }
 
 void OpenGLSphereLayer::setVisibility(const IOpenXrQuadLayer::Visibility &visibility)
