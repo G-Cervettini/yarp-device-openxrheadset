@@ -13,6 +13,7 @@ void Renderer::clear() const
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_STENCIL_BUFFER_BIT);
 }
 
 void Renderer::draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
@@ -21,4 +22,14 @@ void Renderer::draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
     va.bind();
     ib.bind();
     glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, nullptr);
+}
+
+void Renderer::drawLines(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
+{
+    shader.bind();
+    va.bind();
+    ib.bind();
+    //glDisable(GL_LIGHTING);
+    glDrawElements(GL_LINES, ib.getCount(), GL_UNSIGNED_INT, nullptr);
+    //glEnable(GL_LIGHTING);
 }

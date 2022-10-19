@@ -37,8 +37,9 @@ class OpenGLSphereLayer : public IOpenXrQuadLayer
     int32_t m_imageMaxHeight = 0;
     VertexArray m_va;
     VertexBuffer m_vb;
+    VertexBufferLayout m_layout;
     IndexBuffer m_ib;
-    Shader m_shader;
+    Shader m_shader, m_shaderLine;
     Texture m_userTexture, m_internalTexture;
     FrameBuffer m_userBuffer;
     FrameBuffer m_internalBuffer;
@@ -77,6 +78,10 @@ public:
     OpenGLSphereLayer& operator=(OpenGLSphereLayer&&) = delete;
 
     bool initialize(int32_t imageMaxWidth, int32_t imageMaxHeight);
+    
+    void render();
+
+    void setRad(float radius);
 
     void setAngles(int pan, int tilt);
 
@@ -89,8 +94,6 @@ public:
     void setFOVs(float fovX, float fovY);
 
     void setDepthLimits(float zNear, float zFar);
-
-    void render();
 
     void setOffsetPosition(const Eigen::Vector3f& offset);
 
@@ -109,7 +112,9 @@ public:
 
     virtual void setQuaternion(const Eigen::Quaternionf &quaternion) override;
 
-    virtual void setDimensions(float widthInMeters, float heightInMeters, float depthInMeters) override;
+    void setAxisScale(float scaleX, float scaleY, float scaleZ);
+
+    virtual void setDimensions(float widthInMeters, float heightInMeters) override;
 
     virtual void setVisibility(const Visibility& visibility) override;
 
