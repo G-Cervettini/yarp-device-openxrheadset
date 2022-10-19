@@ -25,15 +25,9 @@ bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // src (output color of the fragment shader) and dest (color already in the buffer) factors respectively (sfactor, dfactor)
     glEnable(GL_CULL_FACE);
 
-    m_vb.setVertices(m_sphere.getInterleavedVertices());
-
-    VertexBufferLayout layout;
-    layout.push<float>(3); // 3 floats for each vertex position
-    layout.push<float>(2); // 2 floats for texture coordinates to be mapped on each vertex
-    layout.push<float>(3); // 3 floats for each vertex normal
-    m_va.addBuffer(m_vb, layout);
-
-    m_ib.setIndices(m_sphere.getIndices());
+    m_layout.push<float>(3); // 3 floats for each vertex position
+    m_layout.push<float>(2); // 2 floats for texture coordinates to be mapped on each vertex
+    m_layout.push<float>(3); // 3 floats for each vertex normal
 
     m_shader.initializeFromString(QuadLayerShader::Content());
     m_shader.bind();
@@ -46,19 +40,60 @@ bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight
     m_internalTexture.bindToFrameBuffer(m_internalBuffer);
     m_internalTexture.allocateTexture(imageMaxWidth, imageMaxHeight);
 
-    m_shader.setUniform1i("u_Texture", 0); // the second argument must match the input of texture.Bind(input)
+    m_shader.setUniform1i("u_Texture", 0); // the second argument must match the input of texture.bind(input)
     m_shader.setUniform1i("u_UseAlpha", m_useAlpha);
 
     m_internalTexture.unbind();
     m_internalBuffer.unbind();
-
-    /* unbinding everything */
-    m_va.unbind();
-    m_vb.unbind();
-    m_ib.unbind();
     m_shader.unbind();
 
+    m_shaderLine.initializeFromString(QuadLayerShader::Solid());
+    m_shaderLine.bind();
+    m_shaderLine.setUniform4f("u_Color", 0.5f, 0.5f, 0.5f, 1.0f);
+    m_shaderLine.unbind();
+
     return true;
+}
+
+void OpenGLSphereLayer::render()
+{
+    Renderer renderer;
+
+    m_internalTexture.bind();
+
+    glm::mat4 modelPose = m_modelTra * m_modelRot;
+    glm::mat4 sca = glm::scale(glm::mat4(1.0f), m_modelScale);
+    glm::mat4 model = m_offsetTra * modelPose * sca;
+    glm::mat4 proj = glm::perspective(m_fovY, m_aspectRatio, m_zNear, m_zFar);                           // 3D alternative to "ortho" proj type. It allows to define the view frustum by inserting the y FOV, the aspect ratio of the window, where are placed the near and far clipping planes
+
+    glm::mat4 layerTransform = proj * model;
+
+    m_vb.setVertices(m_sphere.getInterleavedVertices());
+    m_va.addBuffer(m_vb, m_layout);
+    m_ib.setIndices(m_sphere.getIndices());
+
+    m_shader.bind();                                                                                                  // bind shader
+    m_shader.setUniformMat4f("u_H", layerTransform);
+    m_shader.setUniform1i("u_UseAlpha", m_useAlpha);
+
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glPolygonOffset(1.0f, 1.0f);
+    renderer.draw(m_va, m_ib, m_shader);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+
+    if (m_isGridVisible)
+    {
+        m_shaderLine.bind();
+        m_shaderLine.setUniformMat4f("u_H", layerTransform);
+        m_ib.setIndices(m_sphere.getLineIndices());
+
+        renderer.drawLines(m_va, m_ib, m_shaderLine);
+    }
+}
+
+void OpenGLSphereLayer::setRad(float radius)
+{
+    m_sphere.setRadius(radius);
 }
 
 void OpenGLSphereLayer::setAngles(int pan, int tilt)
@@ -79,7 +114,7 @@ void OpenGLSphereLayer::setGridPolesDir(bool horizontal)                       /
 
 void OpenGLSphereLayer::setGridVisibility(bool visible)
 {
-    m_isGridVisible = visible; // the flag must be used inside the rendering
+    m_isGridVisible = visible;                                                 // the flag must be used inside the rendering
 }
 
 void OpenGLSphereLayer::setFOVs(float fovX, float fovY)
@@ -97,27 +132,6 @@ void OpenGLSphereLayer::setDepthLimits(float zNear, float zFar)
 {
     m_zNear = zNear;
     m_zFar = zFar;
-}
-
-void OpenGLSphereLayer::render()
-{
-    Renderer renderer;
-
-    m_internalTexture.bind();
-
-    glm::mat4 modelPose = m_modelTra * m_modelRot;
-    glm::mat4 sca = glm::scale(glm::mat4(1.0f), m_modelScale);
-
-    glm::mat4 model = m_offsetTra * modelPose * sca;
-    glm::mat4 proj = glm::perspective(m_fovY, m_aspectRatio, m_zNear, m_zFar);                           // 3D alternative to "ortho" proj type. It allows to define the view frustum by inserting the y FOV, the aspect ratio of the window, where are placed the near and far clipping planes
-
-    glm::mat4 layerTransform = proj * model;
-
-    m_shader.bind();                                                                                                  // bind shader
-    m_shader.setUniformMat4f("u_H", layerTransform);
-    m_shader.setUniform1i("u_UseAlpha", m_useAlpha);
-
-    renderer.draw(m_va, m_ib, m_shader);
 }
 
 void OpenGLSphereLayer::setOffsetPosition(const Eigen::Vector3f& offset) // the offset vector must represent the position of the screen wrt the headset. Both the Screen Frames are right-handed, have the origin at the center of the screen, the x to the right and the y pointing up.
@@ -176,11 +190,17 @@ void OpenGLSphereLayer::setQuaternion(const Eigen::Quaternionf &quaternion)
     m_modelRot = glm::mat4_cast(qInput);
 }
 
-void OpenGLSphereLayer::setDimensions(float widthInMeters, float heightInMeters, float depthInMeters)
+void OpenGLSphereLayer::setAxisScale(float scaleX, float scaleY, float scaleZ)
 {
-    m_modelScale.x = widthInMeters;
-    m_modelScale.y = heightInMeters;
-    m_modelScale.z = depthInMeters;
+    m_modelScale.x = scaleX;
+    m_modelScale.y = scaleY;
+    m_modelScale.z = scaleZ;
+}
+
+void OpenGLSphereLayer::setDimensions(float widthInMeters, float heightInMeters)
+{
+    //m_modelScale.x = widthInMeters;
+    //m_modelScale.y = heightInMeters;
 }
 
 void OpenGLSphereLayer::setVisibility(const IOpenXrQuadLayer::Visibility &visibility)
