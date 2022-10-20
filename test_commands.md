@@ -51,6 +51,5 @@ yarp connect /grabber /joypadDevice/Oculus/display/right:i mjpeg
 
 OR
 
-yarp connect /image:o /OpenXrHeadset/display/left:i
-
+yarp connect /image:o /OpenXrHeadset/display/left:i  
 yarp connect /image:o /OpenXrHeadset/display/right:i
