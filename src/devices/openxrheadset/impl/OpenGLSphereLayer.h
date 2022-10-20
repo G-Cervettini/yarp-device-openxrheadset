@@ -46,7 +46,7 @@ class OpenGLSphereLayer : public IOpenXrQuadLayer
     bool m_useAlpha{true};
     bool m_isEnabled{true};
     bool m_isReleased{false};
-    bool m_isGridVisible{false};
+    bool m_isGridVisible{true};
 
     glm::mat4 m_offsetTra = glm::mat4(1.0f);                                  // position of the Headset Frame WRT the Left or Right Screen Frame
     bool m_offsetIsSet{false};

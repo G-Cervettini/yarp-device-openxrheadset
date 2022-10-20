@@ -1186,6 +1186,21 @@ void OpenXrInterface::render()
         }
     }
 
+    Eigen::Matrix4f leftEyePose = toEigen(m_pimpl->view_space_location.pose).inverse() * toEigen(m_pimpl->views[0].pose);
+
+    for (auto& openGLLayer : m_pimpl->openGLSphereLayers)
+    {
+        if (openGLLayer->shouldRender() && (openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::LEFT_EYE || openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::BOTH_EYES))
+        {
+            openGLLayer->setFOVs(std::abs(m_pimpl->views[0].fov.angleLeft) + std::abs(m_pimpl->views[0].fov.angleDown), std::abs(m_pimpl->views[0].fov.angleUp) + std::abs(m_pimpl->views[0].fov.angleDown));
+            if (!openGLLayer->offsetIsSet())
+            {
+                openGLLayer->setOffsetPosition(leftEyePose.block<3, 1>(0, 3));
+            }
+            openGLLayer->render();
+        }
+    }
+
     if (!m_pimpl->hideWindow)
     {
         glBlitNamedFramebuffer(m_pimpl->glFrameBufferId, 0,
@@ -1230,6 +1245,22 @@ void OpenXrInterface::render()
                 {
                     yCWarning(OPENXRHEADSET) << "Avoided to updated the offset for one layer of the right eye because the view position is not tracked.";
                 }
+            }
+            openGLLayer->render();
+        }
+    }
+
+    Eigen::Matrix4f rightEyePose = toEigen(m_pimpl->view_space_location.pose).inverse() * toEigen(m_pimpl->views[1].pose);
+
+
+    for (auto& openGLLayer : m_pimpl->openGLSphereLayers)
+    {
+        if (openGLLayer->shouldRender() && (openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::RIGHT_EYE || openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::BOTH_EYES))
+        {
+            openGLLayer->setFOVs(std::abs(m_pimpl->views[1].fov.angleLeft) + std::abs(m_pimpl->views[1].fov.angleDown), std::abs(m_pimpl->views[1].fov.angleUp) + std::abs(m_pimpl->views[1].fov.angleDown));
+            if (!openGLLayer->offsetIsSet())
+            {
+                openGLLayer->setOffsetPosition(rightEyePose.block<3, 1>(0, 3));
             }
             openGLLayer->render();
         }
@@ -1493,6 +1524,24 @@ std::shared_ptr<IOpenXrQuadLayer> OpenXrInterface::addHeadFixedOpenGLQuadLayer()
                          std::min(m_pimpl->viewconfig_views[0].recommendedImageRectHeight, m_pimpl->viewconfig_views[1].recommendedImageRectHeight));
 
     m_pimpl->openGLQuadLayers.push_back(newLayer);
+
+    return newLayer;
+}
+
+std::shared_ptr<IOpenXrQuadLayer> OpenXrInterface::addHeadFixedOpenGLSphereLayer()
+{
+    if (!m_pimpl->initialized)
+    {
+        yCError(OPENXRHEADSET) << "The OpenXr interface has not been initialized.";
+        return nullptr;
+    }
+
+    std::shared_ptr<OpenGLSphereLayer> newLayer = std::make_shared<OpenGLSphereLayer>();
+
+    newLayer->initialize(std::min(m_pimpl->viewconfig_views[0].recommendedImageRectWidth, m_pimpl->viewconfig_views[1].recommendedImageRectWidth),
+        std::min(m_pimpl->viewconfig_views[0].recommendedImageRectHeight, m_pimpl->viewconfig_views[1].recommendedImageRectHeight));
+
+    m_pimpl->openGLSphereLayers.push_back(newLayer);
 
     return newLayer;
 }

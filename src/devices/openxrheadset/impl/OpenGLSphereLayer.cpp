@@ -199,8 +199,8 @@ void OpenGLSphereLayer::setAxisScale(float scaleX, float scaleY, float scaleZ)
 
 void OpenGLSphereLayer::setDimensions(float widthInMeters, float heightInMeters)
 {
-    //m_modelScale.x = widthInMeters;
-    //m_modelScale.y = heightInMeters;
+    m_modelScale.x = widthInMeters;
+    m_modelScale.y = heightInMeters;
 }
 
 void OpenGLSphereLayer::setVisibility(const IOpenXrQuadLayer::Visibility &visibility)

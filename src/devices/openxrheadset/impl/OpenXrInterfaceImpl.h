@@ -14,6 +14,7 @@
 #include <OpenXrInterface.h>
 #include <impl/OpenXrQuadLayer.h>
 #include <impl/OpenGLQuadLayer.h>
+#include <impl/OpenGLSphereLayer.h>
 #include <OpenXrEigenConversions.h>
 
 
@@ -314,6 +315,8 @@ public:
     std::vector<std::shared_ptr<OpenXrQuadLayer>> headLockedQuadLayers;
 
     std::vector <std::shared_ptr<OpenGLQuadLayer>> openGLQuadLayers;
+
+    std::vector <std::shared_ptr<OpenGLSphereLayer>> openGLSphereLayers;
 
     // Location of the head with respect to the play_space
     XrSpaceLocation view_space_location;

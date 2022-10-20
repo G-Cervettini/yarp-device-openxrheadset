@@ -358,6 +358,9 @@ bool yarp::dev::OpenXrHeadset::threadInit()
         m_eyesManager.options().leftEyeQuadLayer = m_openXrInterface.addHeadFixedOpenGLQuadLayer();
         m_eyesManager.options().rightEyeQuadLayer = m_openXrInterface.addHeadFixedOpenGLQuadLayer();
 
+        m_eyesManager.options().leftEyeQuadLayer = m_openXrInterface.addHeadFixedOpenGLSphereLayer();
+        m_eyesManager.options().rightEyeQuadLayer = m_openXrInterface.addHeadFixedOpenGLSphereLayer();
+
         if (!m_eyesManager.initialize())
         {
             yCError(OPENXRHEADSET) << "Failed to initialize eyes.";
