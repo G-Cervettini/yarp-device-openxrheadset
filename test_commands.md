@@ -33,17 +33,23 @@ yarpdev --device transformServer --ROS::enable_ros_publisher 0 --ROS::enable_ros
 
 T3 (robsub): what to stop and restart every time you do a modification (relative paths are resolved according to where this is launched from)  
 yarpdev --from openXRHeadsetParameters.ini
+
 OR
+
 yarpdev --device openxrheadset
 
 T4 (robsub): Fake camera  
 yarpdev --device fakeFrameGrabber --name /grabber
+
 OR
+
 yarpdev --device opencv_grabber --name /image:o --camera 0
 
 T5 (robsub):  
 yarp connect /grabber /joypadDevice/Oculus/display/left:i mjpeg  
 yarp connect /grabber /joypadDevice/Oculus/display/right:i mjpeg
+
 OR
+
 yarp connect /image:o /OpenXrHeadset/display/left:i
 yarp connect /image:o /OpenXrHeadset/display/right:i
