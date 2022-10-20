@@ -165,6 +165,8 @@ public:
 
     std::shared_ptr<IOpenXrQuadLayer> addHeadFixedOpenGLQuadLayer();
 
+    std::shared_ptr<IOpenXrQuadLayer> addHeadFixedOpenGLSphereLayer();
+
     bool isRunning() const;
 
     Pose headPose() const;
