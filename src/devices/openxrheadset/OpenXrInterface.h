@@ -61,6 +61,33 @@ public:
     virtual void setEnabled(bool enabled) = 0;
 };
 
+class IOpenXrSphereLayer : public IOpenXrQuadLayer
+{
+public:
+
+    enum class GridPolesDirection
+    {
+        HORIZONTAL,
+        VERTICAL
+    };
+
+    enum class GridVisibility
+    {
+        VISIBLE_GRID,
+        HIDDEN_GRID
+    };
+
+    virtual void setSphereRadius(float radius) = 0;
+
+    virtual void setViewAngles(int pan, int tilt) = 0;
+
+    virtual void setGridResolution(unsigned int degreesPerTriangle) = 0;
+
+    virtual void setGridPolesDirection(const GridPolesDirection&  gridPolesDirection) = 0;
+
+    virtual void setGridVisibility(const GridVisibility& gridVisibility) = 0;
+};
+
 struct OpenXrInterfaceSettings
 {
     double posesPredictionInMs{0.0};
