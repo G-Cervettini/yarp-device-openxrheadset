@@ -81,7 +81,7 @@ void OpenGLSphereLayer::render()
     renderer.draw(m_va, m_ib, m_shader);
     glDisable(GL_POLYGON_OFFSET_FILL);
 
-    if (m_isGridVisible)
+    if (m_isGridVisible == GridVisibility::VISIBLE_GRID)
     {
         m_shaderLine.bind();
         m_shaderLine.setUniformMat4f("u_H", layerTransform);
@@ -91,30 +91,39 @@ void OpenGLSphereLayer::render()
     }
 }
 
-void OpenGLSphereLayer::setRad(float radius)
+void OpenGLSphereLayer::setSphereRadius(float radius)
 {
     m_sphere.setRadius(radius);
 }
 
-void OpenGLSphereLayer::setAngles(int pan, int tilt)
+void OpenGLSphereLayer::setViewAngles(int pan, int tilt)
 {
     m_sphere.setPanAngle(pan);
     m_sphere.setTiltAngle(tilt);
 }
 
-void OpenGLSphereLayer::setGridRes(unsigned int degreesPerTriangle)            // Set grid resolution expressed in degrees. Input can range between 1 and min(pan, tilt). The smaller the input, the higher the resolution.
+void OpenGLSphereLayer::setGridResolution(unsigned int degreesPerTriangle)                        // Set grid resolution expressed in degrees. Input can range between 1 and min(pan, tilt). The smaller the input, the higher the resolution.
 {
     m_sphere.setDPT(degreesPerTriangle);
 }
 
-void OpenGLSphereLayer::setGridPolesDir(bool horizontal)                       // Set direction of the grid poles: horizontal/vertical.
+void OpenGLSphereLayer::setGridPolesDirection(const GridPolesDirection& gridPolesDirection)       // Set direction of the grid poles: horizontal/vertical.
 {
-    m_sphere.setFlip(horizontal);
+    switch (gridPolesDirection)
+    {
+    case GridPolesDirection::HORIZONTAL:
+        m_sphere.setFlip(true);
+        break;
+
+    case GridPolesDirection::VERTICAL:
+        m_sphere.setFlip(false);
+        break;
+    }
 }
 
-void OpenGLSphereLayer::setGridVisibility(bool visible)
+void OpenGLSphereLayer::setGridVisibility(const GridVisibility& gridVisibility)
 {
-    m_isGridVisible = visible;                                                 // the flag must be used inside the rendering
+    m_isGridVisible = gridVisibility;                                                             // the flag is used inside the OpenGLSphereLayer::render() method
 }
 
 void OpenGLSphereLayer::setFOVs(float fovX, float fovY)

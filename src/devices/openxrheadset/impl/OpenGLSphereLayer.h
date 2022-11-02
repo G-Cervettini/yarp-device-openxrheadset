@@ -24,7 +24,7 @@
 #include <FrameBuffer.h>
 #include <Sphere.h>
 
-class OpenGLSphereLayer : public IOpenXrQuadLayer
+class OpenGLSphereLayer : public IOpenXrSphereLayer
 {
     Sphere m_sphere;                                                          // radius, pan angle (deg), tilt angle (deg), degrees per triangle, flip N-S poles to E-W poles, smooth shading (default: true)
 
@@ -46,7 +46,7 @@ class OpenGLSphereLayer : public IOpenXrQuadLayer
     bool m_useAlpha{true};
     bool m_isEnabled{true};
     bool m_isReleased{false};
-    bool m_isGridVisible{true};
+    GridVisibility m_isGridVisible{ GridVisibility::VISIBLE_GRID };
 
     glm::mat4 m_offsetTra = glm::mat4(1.0f);                                  // position of the Headset Frame WRT the Left or Right Screen Frame
     bool m_offsetIsSet{false};
@@ -81,15 +81,15 @@ public:
     
     void render();
 
-    void setRad(float radius);
+    virtual void setSphereRadius(float radius) override;
 
-    void setAngles(int pan, int tilt);
+    virtual void setViewAngles(int pan, int tilt) override;
 
-    void setGridRes(unsigned int degreesPerTriangle);
+    virtual void setGridResolution(unsigned int degreesPerTriangle) override;
 
-    void setGridPolesDir(bool horizontal);
+    virtual void setGridPolesDirection(const GridPolesDirection& gridPolesDirection) override;
 
-    void setGridVisibility(bool visible);
+    virtual void setGridVisibility(const GridVisibility& gridVisibility) override;
 
     void setFOVs(float fovX, float fovY);
 
