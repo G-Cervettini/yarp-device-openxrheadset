@@ -1528,7 +1528,7 @@ std::shared_ptr<IOpenXrQuadLayer> OpenXrInterface::addHeadFixedOpenGLQuadLayer()
     return newLayer;
 }
 
-std::shared_ptr<IOpenXrQuadLayer> OpenXrInterface::addHeadFixedOpenGLSphereLayer()
+std::shared_ptr<IOpenXrSphereLayer> OpenXrInterface::addHeadFixedOpenGLSphereLayer()
 {
     if (!m_pimpl->initialized)
     {
