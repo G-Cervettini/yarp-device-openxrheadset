@@ -192,7 +192,7 @@ public:
 
     std::shared_ptr<IOpenXrQuadLayer> addHeadFixedOpenGLQuadLayer();
 
-    std::shared_ptr<IOpenXrQuadLayer> addHeadFixedOpenGLSphereLayer();
+    std::shared_ptr<IOpenXrSphereLayer> addHeadFixedOpenGLSphereLayer();
 
     bool isRunning() const;
 
