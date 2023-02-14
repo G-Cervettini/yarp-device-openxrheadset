@@ -17,7 +17,7 @@ class Sphere
 {
 public:
     // ctor/dtor
-    Sphere(float radius=1.0f, int panAngle=180, int tiltAngle=90, unsigned int dpt=10, bool flip = false, bool smooth=true);
+    Sphere(float radius=10.0f, int panAngle=75, int tiltAngle=100, unsigned int dpt=10, bool flip = true, bool smooth=true);
     ~Sphere() {}
 
     // getters/setters
