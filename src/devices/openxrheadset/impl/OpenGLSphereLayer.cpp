@@ -11,6 +11,7 @@
 #include <OpenXrHeadsetLogComponent.h>
 #include <OpenXrEigenConversions.h>
 #include <QuadLayerShader.h>            // it can be used for the sphere too.
+#include <SolidShader.h>
 #include <string>
 
 bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight)
@@ -47,7 +48,7 @@ bool OpenGLSphereLayer::initialize(int32_t imageMaxWidth, int32_t imageMaxHeight
     m_internalBuffer.unbind();
     m_shader.unbind();
 
-    m_shaderLine.initializeFromString(QuadLayerShader::Solid());
+    m_shaderLine.initializeFromString(SolidShader::Content());
     m_shaderLine.bind();
     m_shaderLine.setUniform4f("u_Color", 0.5f, 0.5f, 0.5f, 1.0f);
     m_shaderLine.unbind();
