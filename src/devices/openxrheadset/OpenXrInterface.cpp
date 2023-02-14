@@ -1186,16 +1186,18 @@ void OpenXrInterface::render()
         }
     }
 
-    Eigen::Matrix4f leftEyePose = toEigen(m_pimpl->view_space_location.pose).inverse() * toEigen(m_pimpl->views[0].pose);
-
     for (auto& openGLLayer : m_pimpl->openGLSphereLayers)
     {
         if (openGLLayer->shouldRender() && (openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::LEFT_EYE || openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::BOTH_EYES))
         {
-            openGLLayer->setFOVs(std::abs(m_pimpl->views[0].fov.angleLeft) + std::abs(m_pimpl->views[0].fov.angleDown), std::abs(m_pimpl->views[0].fov.angleUp) + std::abs(m_pimpl->views[0].fov.angleDown));
-            if (!openGLLayer->offsetIsSet())
+            openGLLayer->setFOVs(std::abs(m_pimpl->views[0].fov.angleLeft) + std::abs(m_pimpl->views[0].fov.angleRight), std::abs(m_pimpl->views[0].fov.angleUp) + std::abs(m_pimpl->views[0].fov.angleDown));
+            if (viewIsValid)
             {
-                openGLLayer->setOffsetPosition(leftEyePose.block<3, 1>(0, 3));
+                openGLLayer->setOffsetPosition(toEigen(m_pimpl->views[0].pose.position));
+            }
+            else
+            {
+                yCWarning(OPENXRHEADSET) << "Avoided to updated the offset for one layer of the left eye because the view position is not tracked.";
             }
             openGLLayer->render();
         }
@@ -1250,17 +1252,18 @@ void OpenXrInterface::render()
         }
     }
 
-    Eigen::Matrix4f rightEyePose = toEigen(m_pimpl->view_space_location.pose).inverse() * toEigen(m_pimpl->views[1].pose);
-
-
     for (auto& openGLLayer : m_pimpl->openGLSphereLayers)
     {
         if (openGLLayer->shouldRender() && (openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::RIGHT_EYE || openGLLayer->visibility() == IOpenXrQuadLayer::Visibility::BOTH_EYES))
         {
-            openGLLayer->setFOVs(std::abs(m_pimpl->views[1].fov.angleLeft) + std::abs(m_pimpl->views[1].fov.angleDown), std::abs(m_pimpl->views[1].fov.angleUp) + std::abs(m_pimpl->views[1].fov.angleDown));
-            if (!openGLLayer->offsetIsSet())
+            openGLLayer->setFOVs(std::abs(m_pimpl->views[1].fov.angleLeft) + std::abs(m_pimpl->views[1].fov.angleRight), std::abs(m_pimpl->views[1].fov.angleUp) + std::abs(m_pimpl->views[1].fov.angleDown));
+            if (viewIsValid)
             {
-                openGLLayer->setOffsetPosition(rightEyePose.block<3, 1>(0, 3));
+                openGLLayer->setOffsetPosition(toEigen(m_pimpl->views[1].pose.position));
+            }
+            else
+            {
+                yCWarning(OPENXRHEADSET) << "Avoided to updated the offset for one layer of the right eye because the view position is not tracked.";
             }
             openGLLayer->render();
         }
